@@ -6,7 +6,7 @@
 - Amanda Song <amandasong@uchicago.edu>
 
 ## Research Question
-<INPUT RESEARCH QUESTION>
+Are pedestrian stops conducted by the NYPD more likely to result in arrests for certain racial groups or precincts, considering various stop characteristics and suspected offenses?
 
 ## Updated Proposal
 Using data from the New York Police Department (NYPD), we are studying enforcement patterns, specifically stop, question, and frisk (SQF) actions, in New York City. We plan to analyze whether an arrest was made based on key features in the dataset, where our classification model will identify which stops lead to an arrest versus those that do not. By analyzing features such as how a stop was initiated, demographic information on the individual, suspected crime type, and location, we can see how these factors are associated with enforcement activity (or a lack thereof). Given the NYPD’s massive budget, finding evidence of an enforcement gap would suggest that systemic bias, as opposed to underfunding, drives the selection logic for law enforcement of different populations. The findings would increase transparency on the NYPD’s selective enforcement actions and highlight any discrepancies in such actions across precincts to interrogate institutional accountability. Machine learning enables us to analyze historical SQF data to identify if certain communities are systematically targeted by enforcement and to detect patterns of discretionary bias across precincts. This could also provide predictive insights on future enforcement actions, accounting for demographic and precinct-level factors as drivers of systemic outcomes.
@@ -23,3 +23,5 @@ Features we plan on using include the following:
 6. "STOP_LOCATION_PRECINCT": One of 78 police precincts where the stop occurred
 
 The feature we plan on extracting is whether an individual is arrested from the stop ("SUSPECT_ARRESTED_FLAG"). This feature will be used as a label during the training of our model, and will subsequently be the feature that our model will be able to predict based on the given inputs.
+
+Note: Run *uv run python process_data.py* in the *src* folder to generate basic statistics and visualizations.

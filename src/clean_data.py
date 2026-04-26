@@ -10,14 +10,32 @@ class SQFDataCleaner:
     
     def load_data(self):
         """
-        loading all data from the file
+        Loads the raw NYPD SQF dataset from an Excel file into a Pandas DataFrame.
+
+        Returns:
+            self: The instance with the raw DataFrame loaded.
         """
         self.df = pd.read_excel(self.file_path, engine="openpyxl")
         return self
     
     
     def select_and_clean(self):
-        """data select and clean"""
+        """
+        Performs initial data cleaning by selecting relevant features and 
+        handling missing values to ensure data integrity for modeling.
+
+        Specific operations include:
+        1. Subset selection: Retains only the columns necessary for demographic 
+           and enforcement analysis.
+        2. Age normalization: Converts reported age to numeric values and 
+           imputes missing data using the median to minimize outlier impact.
+        3. Row-wise deletion: Removes any remaining records with null values 
+           to provide a complete dataset for the training pipeline.
+
+        Returns:
+            self: The instance with the cleaned and filtered DataFrame.
+        """
+
         features = [
             "SUSPECT_RACE_DESCRIPTION", "SUSPECT_REPORTED_AGE", "SUSPECT_SEX",
             "STOP_LOCATION_PRECINCT", "STOP_WAS_INITIATED", 
@@ -39,5 +57,5 @@ class SQFDataCleaner:
 
 if __name__ == "__main__":
     cleaner = SQFDataCleaner()
-    cleaner.load_data().select_and_clean().save_clean_data()
-
+    cleaner.load_data().select_and_clean().save_cleaned_data()
+    

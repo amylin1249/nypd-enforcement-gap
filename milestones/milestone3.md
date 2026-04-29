@@ -5,7 +5,6 @@
 - Amy Lin <amyslin@uchicago.edu>
 - Amanda Song <amandasong@uchicago.edu>
 
-
 ## Which linear model did you pick? Why?
 logistics regression
 
@@ -16,7 +15,7 @@ L1/ L2
 
 
 ## What metrics will you use to analyze the performance of your model?
-precision,recall
+Training and test accuracy (given that our model is not too imbalanced - xx positive labels, xx negative labels), precision, recall, F1 score (combination of both)
 
 ## How do you plan on organizing your code for your project?
 clean_data.py: data cleaning and encoding, processing

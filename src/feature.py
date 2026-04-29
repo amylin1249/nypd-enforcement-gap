@@ -1,4 +1,8 @@
 import pandas as pd
+from pathlib import Path
+
+CLEAN_SQF = Path(__file__).parent.parent / "clean-data/cleaned_sqf.csv"
+FINAL_SQF = Path(__file__).parent.parent / "clean-data/final_sqf.csv"
 
 class SQFFeatureEngineer:
     def __init__(self, df):
@@ -30,6 +34,10 @@ class SQFFeatureEngineer:
         self.df["use_of_force"] = force_use_yes.any(axis=1).astype(int)
         return self
     
+        # Amanda: Shall we remove "return self" for all? Also, we can use the
+        # features_force list from before so we don't have to repeat it again here,
+        # assuming that we shift it to a separate datatypes file
+    
     def encode_data(self):
         """
         Converts categorical features into numerical format using One-Hot Encoding 
@@ -50,14 +58,19 @@ class SQFFeatureEngineer:
             "SEARCHED_FLAG", "SUSPECT_ARRESTED_FLAG"
         ]
 
+        # Amanda: Include "SUSPECT_REPORTED_AGE" and "STOP_LOCATION_PRECINCT" here?
+        # They have 79 and 78 distinct counts respectively, which will lead to many
+        # columns for OHE, but we can potentially reduce sparsity with regularization (L2?)
+
         self.df = pd.get_dummies(self.df, columns=categorical_features, drop_first=True)
         return self
     
-    def save_final_data(self, output_path="data/final_features_sqf.csv"):
+    def save_final_data(self, output_path=FINAL_SQF):
         self.df.to_csv(output_path, index=False)
     
 if __name__ == "__main__":
-
-    cleaned_data = pd.read_csv("data/cleaned_sqf.csv")
+    cleaned_data = pd.read_csv(CLEAN_SQF)
     feature_engineer = SQFFeatureEngineer(cleaned_data)
-    feature_engineer.consolidate_use_of_force().encode_data().save_final_data()
+    feature_engineer.consolidate_use_of_force()
+    feature_engineer.encode_data()
+    feature_engineer.save_final_data()

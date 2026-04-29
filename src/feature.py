@@ -58,9 +58,10 @@ class SQFFeatureEngineer:
             "SEARCHED_FLAG", "SUSPECT_ARRESTED_FLAG"
         ]
 
-        # Amanda: Include "SUSPECT_REPORTED_AGE" and "STOP_LOCATION_PRECINCT" here?
+        # Amanda: "SUSPECT_REPORTED_AGE" and "STOP_LOCATION_PRECINCT" are missing here?
         # They have 79 and 78 distinct counts respectively, which will lead to many
-        # columns for OHE, but we can potentially reduce sparsity with regularization (L2?)
+        # columns for OHE, but we can potentially reduce sparsity with regularization (L2?).
+        # Can potentially create bins for age, but might be a challenge creating suitable bins.
 
         self.df = pd.get_dummies(self.df, columns=categorical_features, drop_first=True)
         return self

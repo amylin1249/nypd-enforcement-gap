@@ -10,7 +10,7 @@ We plan to use logistic regression to train our model. As we are working with SQ
 
 To analyze the performance of our model, we plan to evaluate both training and test accuracy given that our model is not too imbalanced (~20% positive labels), as well as the precision and recall of our model. We would place slightly greater emphasis on recall to minimize false negatives (i.e., cases where individuals experience physical force but are not predicted). We plan on organizing our code into a structured pipeline with the following separate modules in src (directory containing our source files), subject to change: 
 1. clean_data.py: Filtering relevant columns and data cleaning 
-2. feature_engineer.py: Feature extraction and data encoding
+2. feature_engineer.py: Feature extraction and categorical data encoding
 3. model_train.py: Model training and tuning
 4. analyze_performance.py: Model testing and performance analysis
 

@@ -52,17 +52,11 @@ class SQFFeatureEngineer:
             self: The instance with the transformed DataFrame. 
         
         """
-        categorical_features= [
+        categorical_features = [
             "SUSPECT_RACE_DESCRIPTION", "SUSPECT_SEX", "STOP_WAS_INITIATED",
             "SUSPECTED_CRIME_DESCRIPTION", "FRISKED_FLAG", 
             "SEARCHED_FLAG", "SUSPECT_ARRESTED_FLAG"
         ]
-
-        # Amanda: "SUSPECT_REPORTED_AGE" and "STOP_LOCATION_PRECINCT" not included here?
-        # They have 79 and 78 distinct counts respectively, which will lead to many
-        # columns for OHE, but we can potentially reduce sparsity with regularization (L2?).
-        # Can potentially create bins for age, but might be a challenge creating suitable bins.
-        # Or can we leave it where the above are OHE and age and precincts are left as is in their own columns?
 
         self.df = pd.get_dummies(self.df, columns=categorical_features, drop_first=True)
         return self

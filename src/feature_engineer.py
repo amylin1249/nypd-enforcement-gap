@@ -32,11 +32,13 @@ class SQFFeatureEngineer:
 
         force_use_yes = (self.df[forces] == "Y")
         self.df["use_of_force"] = force_use_yes.any(axis=1).astype(int)
+        self.df.drop(columns=forces, inplace=True)
         return self
     
         # Amanda: Shall we remove "return self" for all? Also, we can use the
         # features_force list from before so we don't have to repeat it again here,
         # assuming that we shift it to a separate datatypes file
+        # Also added the line to drop columns=forces so that our df will only have the consolidated column
     
     def encode_data(self):
         """
@@ -53,10 +55,16 @@ class SQFFeatureEngineer:
         
         """
         categorical_features = [
-            "SUSPECT_RACE_DESCRIPTION", "SUSPECT_SEX", "STOP_WAS_INITIATED",
-            "SUSPECTED_CRIME_DESCRIPTION", "FRISKED_FLAG", 
-            "SEARCHED_FLAG", "SUSPECT_ARRESTED_FLAG"
+            "SUSPECT_RACE_DESCRIPTION", "STOP_WAS_INITIATED",
+            "SUSPECTED_CRIME_DESCRIPTION"
         ]
+
+        # Amanda: I changed the categorical_features to just be for those above 
+        # because the others that were originally included are already binary indicators
+        # Originally included: categorical_features = [
+        #     "SUSPECT_RACE_DESCRIPTION", "SUSPECT_SEX", "STOP_WAS_INITIATED",
+        #     "SUSPECTED_CRIME_DESCRIPTION", "FRISKED_FLAG", 
+        #     "SEARCHED_FLAG", "SUSPECT_ARRESTED_FLAG"]
 
         self.df = pd.get_dummies(self.df, columns=categorical_features, drop_first=True)
         return self
@@ -65,8 +73,8 @@ class SQFFeatureEngineer:
         self.df.to_csv(output_path, index=False)
     
 if __name__ == "__main__":
-    cleaned_data = pd.read_csv(CLEAN_SQF)
-    feature_engineer = SQFFeatureEngineer(cleaned_data)
+    cleaned_df = pd.read_csv(CLEAN_SQF)
+    feature_engineer = SQFFeatureEngineer(cleaned_df)
     feature_engineer.consolidate_use_of_force()
     feature_engineer.encode_data()
     feature_engineer.save_final_data()

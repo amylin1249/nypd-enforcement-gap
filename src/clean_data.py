@@ -1,17 +1,14 @@
-import pandas as pd
 import numpy as np
-from pathlib import Path
-from datatypes import FORCE_FEATURES, CLEAN_SQF
-
-RAW_SQF = Path(__file__).parent.parent / "raw-data/sqf-2025.xlsx"
-CLEAN_DATA_DIR = Path(__file__).parent.parent / "clean-data"
+import pandas as pd
+from sklearn import preprocessing
+from datatypes import CLEAN_DATA_DIR, RAW_SQF, CLEAN_SQF, FORCE_FEATURES
 
 
 class SQFDataCleaner:
     def __init__(self, file_path=RAW_SQF):
         self.file_path = file_path
         self.df = None
-    
+
     def load_data(self):
         """
         Loads the raw NYPD SQF dataset from an Excel file into a Pandas DataFrame.
@@ -20,64 +17,173 @@ class SQFDataCleaner:
             self: The instance with the raw DataFrame loaded.
         """
         self.df = pd.read_excel(self.file_path, engine="openpyxl")
-    
-    
+
+        return self
+
     def select_and_clean(self):
         """
-        Performs initial data cleaning by selecting relevant features and 
-        handling missing values to ensure data integrity for modeling.
-
-        Specific operations include:
-        1. Subset selection: Retains only the columns necessary for demographic 
-           and enforcement analysis.
-        2. Age normalization: Converts reported age to numeric values and 
-           imputes missing data using the median to minimize outlier impact.
-        3. Row-wise deletion: Removes any remaining records with null values 
-           to provide a complete dataset for the training pipeline.
+        Performs data cleaning by selecting relevant features, handling missing
+        values, and convert categorical features into numerical format to
+        ensure data integrity for modeling.
 
         Returns:
             self: The instance with the cleaned and filtered DataFrame.
         """
 
-
-        # Amanda: Proposed edits below - I uv run python-ed using the code below (also, shift features to be global or in a separate datatypes file?)
         features = [
-            "SUSPECT_RACE_DESCRIPTION", "SUSPECT_REPORTED_AGE", "SUSPECT_SEX",
-            "STOP_LOCATION_PRECINCT", "STOP_WAS_INITIATED", 
-            "SUSPECTED_CRIME_DESCRIPTION", "FRISKED_FLAG", "SEARCHED_FLAG", 
-            "SUSPECT_ARRESTED_FLAG"]
+            "SUSPECT_RACE_DESCRIPTION",
+            "SUSPECT_REPORTED_AGE",
+            "SUSPECT_SEX",
+            "STOP_LOCATION_PRECINCT",
+            "STOP_WAS_INITIATED",
+            "SUSPECTED_CRIME_DESCRIPTION",
+            "FRISKED_FLAG",
+            "SEARCHED_FLAG",
+            "SUSPECT_ARRESTED_FLAG",
+        ] + FORCE_FEATURES
 
-        self.df = self.df[features + FORCE_FEATURES]
+        self.df = self.df[features].copy()
 
         # Replace all "(null)"" values with NaN values
         self.df.replace("(null)", np.nan, inplace=True)
 
-        # Drop missing values from suspect reported age, suspect sex, and stop location precinct
-        self.df.dropna(subset=["SUSPECT_REPORTED_AGE", "SUSPECT_SEX", "STOP_LOCATION_PRECINCT"], inplace=True)
+        # Drop missing values from features: race, age, sex, location (precinct)
+        self.df.dropna(
+            subset=[
+                "SUSPECT_RACE_DESCRIPTION",
+                "SUSPECT_REPORTED_AGE",
+                "SUSPECT_SEX",
+                "STOP_LOCATION_PRECINCT",
+            ],
+            inplace=True,
+        )
 
         # Reported age: Drop records of suspects below the age of 12 (potential record error)
+        self.df["SUSPECT_REPORTED_AGE"] = pd.to_numeric(
+            self.df["SUSPECT_REPORTED_AGE"], errors="coerce"
+        )
+        self.df = self.df[self.df["SUSPECT_REPORTED_AGE"].notna()]
         self.df["SUSPECT_REPORTED_AGE"] = self.df["SUSPECT_REPORTED_AGE"].astype(int)
         self.df = self.df[self.df["SUSPECT_REPORTED_AGE"] >= 12]
 
-        # Replace "Y" in physical force columns with 1, and missing values with 0 as missing values in these columns refer to "N" 
-        self.df[FORCE_FEATURES] = self.df[FORCE_FEATURES].fillna(value=0)
-        self.df[FORCE_FEATURES] = self.df[FORCE_FEATURES].replace("Y", 1)
+        # Clean stop location (precinct)
+        self.df["STOP_LOCATION_PRECINCT"] = pd.to_numeric(
+            self.df["STOP_LOCATION_PRECINCT"], errors="coerce"
+        )
+        self.df = self.df[self.df["STOP_LOCATION_PRECINCT"].notna()]
+        self.df["STOP_LOCATION_PRECINCT"] = (
+            self.df["STOP_LOCATION_PRECINCT"].astype(int).astype(str)
+        )
 
-        # Replace "Y" in FRISKED_FLAG, SEARCHED_FLAG, SUSPECT_ARRESTED_FLAG columns with 1, and "N" with 0 for consistency 
-        flag_features = ["FRISKED_FLAG", "SEARCHED_FLAG", "SUSPECT_ARRESTED_FLAG"]
-        self.df[flag_features] = self.df[flag_features].replace("Y", 1)
-        self.df[flag_features] = self.df[flag_features].replace("N", 0)
+        # Clean all string columns
+        string_features = [
+            "SUSPECT_RACE_DESCRIPTION",
+            "SUSPECT_SEX",
+            "STOP_WAS_INITIATED",
+            "SUSPECTED_CRIME_DESCRIPTION",
+        ]
 
-        
+        self.df[string_features] = (
+            self.df[string_features]
+            .astype(str)
+            .stack()
+            .str.lower()
+            .str.replace(r"\s*/\s*", "_", regex=True)
+            .str.strip()
+            .unstack()
+        )
+
+        # Fill missing values for features: reason why stop was initiated, suspected crime description
+        self.df["STOP_WAS_INITIATED"] = self.df["STOP_WAS_INITIATED"].replace(
+            "nan", "unknown"
+        )
+        self.df["SUSPECTED_CRIME_DESCRIPTION"] = self.df[
+            "SUSPECTED_CRIME_DESCRIPTION"
+        ].replace("nan", "other")
+
+        # Replace "Y" in binary feature columns with 1, and "N" with 0 for consistency
+        binary_features = ["FRISKED_FLAG", "SEARCHED_FLAG", "SUSPECT_ARRESTED_FLAG"]
+        self.df[binary_features] = self.df[binary_features].replace(
+            {"Y": 1, "N": 0, "nan": 0}
+        )
+        self.df[binary_features] = (
+            self.df[binary_features].apply(pd.to_numeric, errors="coerce").fillna(0)
+        )
+
+        # Replace "Y" in physical force columns with 1, and missing values with 0
+        self.df[FORCE_FEATURES] = self.df[FORCE_FEATURES].replace(
+            {"Y": 1, "nan": 0, np.nan: 0}
+        )
+        self.df[FORCE_FEATURES] = (
+            self.df[FORCE_FEATURES].apply(pd.to_numeric, errors="coerce").fillna(0)
+        )
+
+        # Convert categorical features into numerical format using One-Hot Encoding
+        categorical_features = [
+            "SUSPECT_SEX",
+            "STOP_WAS_INITIATED",
+            "SUSPECTED_CRIME_DESCRIPTION",
+            "STOP_LOCATION_PRECINCT",
+        ]
+
+        # Set white as baseline for race comparison
+        races = sorted(self.df["SUSPECT_RACE_DESCRIPTION"].unique().tolist())
+        if "white" in races:
+            races.remove("white")
+            races.insert(0, "white")
+
+        self.df["SUSPECT_RACE_DESCRIPTION"] = pd.Categorical(
+            self.df["SUSPECT_RACE_DESCRIPTION"], categories=races
+        )
+
+        self.df = pd.get_dummies(
+            self.df, columns=categorical_features + ["SUSPECT_RACE_DESCRIPTION"], 
+            drop_first=True, dtype=float
+        )
+
+        return self
+
+    def normalize_continuous_feature(self):
+        """
+        Normalizes the age feature using the sklearn.preprocessing.normalize
+        method.
+
+        Returns:
+            self: The instance with the normalized age feature.
+        """
+
+        x_array = np.array(self.df["SUSPECT_REPORTED_AGE"])
+        normalized = preprocessing.normalize([x_array])
+        self.df["SUSPECT_REPORTED_AGE"] = normalized[0]
+
+        return self
+
+    def consolidate_use_of_force(self):
+        """
+        Aggregates multiple physical force indicators into a single binary feature,
+        representing whether any form of physical escalation occurred during the stop.
+
+        Returns:
+            self: The instance with the new "USE_OF_FORCE_FLAG" target column added.
+        """
+        force_use_yes = self.df[FORCE_FEATURES] == 1
+        self.df["USE_OF_FORCE_FLAG"] = force_use_yes.any(axis=1).astype(int)
+        self.df.drop(columns=FORCE_FEATURES, inplace=True)
+
+        return self
 
     def save_cleaned_data(self, output_path=CLEAN_SQF):
         if not CLEAN_DATA_DIR.exists():
             CLEAN_DATA_DIR.mkdir()
         self.df.to_csv(output_path, index=False)
 
+
 if __name__ == "__main__":
-    cleaner = SQFDataCleaner()
-    cleaner.load_data()
-    cleaner.select_and_clean()
-    cleaner.save_cleaned_data()
-    
+    (
+        SQFDataCleaner()
+        .load_data()
+        .select_and_clean()
+        .normalize_continuous_feature()
+        .consolidate_use_of_force()
+        .save_cleaned_data()
+    )

@@ -39,7 +39,6 @@ class SQFDataCleaner:
         Returns:
             self: The instance with the cleaned and filtered DataFrame.
         """
-
         features = [
             "SUSPECT_RACE_DESCRIPTION", "SUSPECT_REPORTED_AGE", "SUSPECT_SEX",
             "STOP_LOCATION_PRECINCT", "STOP_WAS_INITIATED", 
@@ -81,9 +80,14 @@ class SQFDataCleaner:
         # self.df["SUSPECT_REPORTED_AGE"] = self.df["SUSPECT_REPORTED_AGE"].astype(int)
         # self.df = self.df[self.df["SUSPECT_REPORTED_AGE"] >= 12]
 
-        # # Replace missing values in physical force columns with "N" for consistency 
-        # ## NOTE TO SELF: Technically not required, but thought it'll be better to fillna since we are calling the result a "clean" dataset
-        # self.df[features_force] = self.df[features_force].fillna(value="N")
+        # # Replace "Y" in physical force columns with 1, and missing values with 0 for consistency 
+        # self.df[features_force] = self.df[features_force].fillna(value=0)
+        # self.df[features_force] = self.df[features_force].replace("Y", 1)
+
+        # # Replace "Y" in FRISKED_FLAG, SEARCHED_FLAG, SUSPECT_ARRESTED_FLAG columns with 1, and "N" with 0 for consistency 
+        # flag_features = ["FRISKED_FLAG", "SEARCHED_FLAG", "SUSPECT_ARRESTED_FLAG"]
+        # self.df[flag_features] = self.df[flag_features].replace("Y", 1)
+        # self.df[flag_features] = self.df[flag_features].replace("N", 0)
 
         # # Also, I think we can remove "return self" for all?
 

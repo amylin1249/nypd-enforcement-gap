@@ -30,7 +30,7 @@ class SQFFeatureEngineer:
             "PHYSICAL_FORCE_WEAPON_IMPACT_FLAG"
         ]
 
-        force_use_yes = (self.df[forces] == "Y")
+        force_use_yes = (self.df[forces] == 1)
         self.df["use_of_force"] = force_use_yes.any(axis=1).astype(int)
         self.df.drop(columns=forces, inplace=True)
         return self
@@ -66,7 +66,7 @@ class SQFFeatureEngineer:
         #     "SUSPECTED_CRIME_DESCRIPTION", "FRISKED_FLAG", 
         #     "SEARCHED_FLAG", "SUSPECT_ARRESTED_FLAG"]
 
-        self.df = pd.get_dummies(self.df, columns=categorical_features, drop_first=True)
+        self.df = pd.get_dummies(self.df, columns=categorical_features, drop_first=True, dtype=float)
         return self
     
     def save_final_data(self, output_path=FINAL_SQF):

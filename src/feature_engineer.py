@@ -55,7 +55,7 @@ class SQFFeatureEngineer:
         
         """
         categorical_features = [
-            "SUSPECT_RACE_DESCRIPTION", "STOP_WAS_INITIATED",
+            "SUSPECT_RACE_DESCRIPTION", "SUSPECT_SEX", "STOP_WAS_INITIATED",
             "SUSPECTED_CRIME_DESCRIPTION"
         ]
 

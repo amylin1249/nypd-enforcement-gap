@@ -1,10 +1,10 @@
 import pandas as pd
 import numpy as np
 from pathlib import Path
+from datatypes import FORCE_FEATURES, CLEAN_SQF
 
 RAW_SQF = Path(__file__).parent.parent / "raw-data/sqf-2025.xlsx"
 CLEAN_DATA_DIR = Path(__file__).parent.parent / "clean-data"
-CLEAN_SQF = Path(__file__).parent.parent / "clean-data/cleaned_sqf.csv"
 
 
 class SQFDataCleaner:
@@ -39,57 +39,53 @@ class SQFDataCleaner:
         Returns:
             self: The instance with the cleaned and filtered DataFrame.
         """
-        features = [
-            "SUSPECT_RACE_DESCRIPTION", "SUSPECT_REPORTED_AGE", "SUSPECT_SEX",
-            "STOP_LOCATION_PRECINCT", "STOP_WAS_INITIATED", 
-            "SUSPECTED_CRIME_DESCRIPTION", "FRISKED_FLAG", 
-            "SEARCHED_FLAG", "SUSPECT_ARRESTED_FLAG"
-        ]
-        self.df = self.df[features]
-        
-        # age: fill in missing values
-        self.df["SUSPECT_REPORTED_AGE"] = pd.to_numeric(self.df["SUSPECT_REPORTED_AGE"], errors='coerce')
-        self.df["SUSPECT_REPORTED_AGE"] = self.df["SUSPECT_REPORTED_AGE"].fillna(self.df["SUSPECT_REPORTED_AGE"].median())
-        
-        # drop missing values
-        self.df = self.df.dropna()
-        # return self
-
-        ## Amanda: Proposed edits below - I uv run python-ed using the code below (also, shift features to be global or in a separate datatypes file?)
         # features = [
         #     "SUSPECT_RACE_DESCRIPTION", "SUSPECT_REPORTED_AGE", "SUSPECT_SEX",
         #     "STOP_LOCATION_PRECINCT", "STOP_WAS_INITIATED", 
-        #     "SUSPECTED_CRIME_DESCRIPTION", "FRISKED_FLAG", "SEARCHED_FLAG", 
-        #     "SUSPECT_ARRESTED_FLAG"]
+        #     "SUSPECTED_CRIME_DESCRIPTION", "FRISKED_FLAG", 
+        #     "SEARCHED_FLAG", "SUSPECT_ARRESTED_FLAG"
+        # ]
+        # self.df = self.df[features]
         
-        # features_force = ["PHYSICAL_FORCE_CEW_FLAG",
-        #     "PHYSICAL_FORCE_DRAW_POINT_FIREARM_FLAG",
-        #     "PHYSICAL_FORCE_HANDCUFF_SUSPECT_FLAG", "PHYSICAL_FORCE_OC_SPRAY_USED_FLAG",
-        #     "PHYSICAL_FORCE_OTHER_FLAG", "PHYSICAL_FORCE_RESTRAINT_USED_FLAG",
-        #     "PHYSICAL_FORCE_WEAPON_IMPACT_FLAG"]
+        # # age: fill in missing values
+        # self.df["SUSPECT_REPORTED_AGE"] = pd.to_numeric(self.df["SUSPECT_REPORTED_AGE"], errors='coerce')
+        # self.df["SUSPECT_REPORTED_AGE"] = self.df["SUSPECT_REPORTED_AGE"].fillna(self.df["SUSPECT_REPORTED_AGE"].median())
+        
+        # # drop missing values
+        # self.df = self.df.dropna()
+        # # return self
 
-        # self.df = self.df[features + features_force]
 
-        # # Replace all "(null)"" values with NaN values
-        # self.df.replace("(null)", np.nan, inplace=True)
+        # Amanda: Proposed edits below - I uv run python-ed using the code below (also, shift features to be global or in a separate datatypes file?)
+        features = [
+            "SUSPECT_RACE_DESCRIPTION", "SUSPECT_REPORTED_AGE", "SUSPECT_SEX",
+            "STOP_LOCATION_PRECINCT", "STOP_WAS_INITIATED", 
+            "SUSPECTED_CRIME_DESCRIPTION", "FRISKED_FLAG", "SEARCHED_FLAG", 
+            "SUSPECT_ARRESTED_FLAG"]
 
-        # # Drop missing values from suspect reported age, suspect sex, and stop location precinct
-        # self.df.dropna(subset=["SUSPECT_REPORTED_AGE", "SUSPECT_SEX", "STOP_LOCATION_PRECINCT"], inplace=True)
+        self.df = self.df[features + FORCE_FEATURES]
 
-        # # Reported age: Drop records of suspects below the age of 12 (potential record error)
-        # self.df["SUSPECT_REPORTED_AGE"] = self.df["SUSPECT_REPORTED_AGE"].astype(int)
-        # self.df = self.df[self.df["SUSPECT_REPORTED_AGE"] >= 12]
+        # Replace all "(null)"" values with NaN values
+        self.df.replace("(null)", np.nan, inplace=True)
 
-        # # Replace "Y" in physical force columns with 1, and missing values with 0 for consistency 
-        # self.df[features_force] = self.df[features_force].fillna(value=0)
-        # self.df[features_force] = self.df[features_force].replace("Y", 1)
+        # Drop missing values from suspect reported age, suspect sex, and stop location precinct
+        self.df.dropna(subset=["SUSPECT_REPORTED_AGE", "SUSPECT_SEX", "STOP_LOCATION_PRECINCT"], inplace=True)
 
-        # # Replace "Y" in FRISKED_FLAG, SEARCHED_FLAG, SUSPECT_ARRESTED_FLAG columns with 1, and "N" with 0 for consistency 
-        # flag_features = ["FRISKED_FLAG", "SEARCHED_FLAG", "SUSPECT_ARRESTED_FLAG"]
-        # self.df[flag_features] = self.df[flag_features].replace("Y", 1)
-        # self.df[flag_features] = self.df[flag_features].replace("N", 0)
+        # Reported age: Drop records of suspects below the age of 12 (potential record error)
+        self.df["SUSPECT_REPORTED_AGE"] = self.df["SUSPECT_REPORTED_AGE"].astype(int)
+        self.df = self.df[self.df["SUSPECT_REPORTED_AGE"] >= 12]
 
-        # # Also, I think we can remove "return self" for all?
+        # Replace "Y" in physical force columns with 1, and missing values with 0 as missing values in these columns refer to "N" 
+        self.df[FORCE_FEATURES] = self.df[FORCE_FEATURES].fillna(value=0)
+        self.df[FORCE_FEATURES] = self.df[FORCE_FEATURES].replace("Y", 1)
+
+        # Replace "Y" in FRISKED_FLAG, SEARCHED_FLAG, SUSPECT_ARRESTED_FLAG columns with 1, and "N" with 0 for consistency 
+        flag_features = ["FRISKED_FLAG", "SEARCHED_FLAG", "SUSPECT_ARRESTED_FLAG"]
+        self.df[flag_features] = self.df[flag_features].replace("Y", 1)
+        self.df[flag_features] = self.df[flag_features].replace("N", 0)
+
+        # Also, I think we can remove "return self" for all?
+
 
     def save_cleaned_data(self, output_path=CLEAN_SQF):
         if not CLEAN_DATA_DIR.exists():

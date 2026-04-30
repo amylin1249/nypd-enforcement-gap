@@ -4,8 +4,7 @@ from pathlib import Path
 from sklearn.model_selection import train_test_split, cross_validate
 from sklearn.linear_model import LogisticRegression
 from sklearn import preprocessing
-
-FINAL_SQF = Path(__file__).parent.parent / "clean-data/final_sqf.csv"
+from datatypes import FINAL_SQF
 
 
 def normalize_continuous_features():
@@ -39,7 +38,7 @@ def logreg_variations(X, y, penalty = "l2", C = 1.0, cv = 5, scoring = None):
     """
     ADD DOCSTRING
     """
-    logreg = LogisticRegression(penalty = penalty, C = C, solver = 'liblinear')
+    logreg = LogisticRegression(penalty = penalty, C = C, solver = "liblinear")
     scores = cross_validate(logreg, X, y, cv=cv, return_train_score=True, scoring = scoring)
     return scores
 

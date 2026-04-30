@@ -1,8 +1,7 @@
 import pandas as pd
 from pathlib import Path
+from datatypes import FORCE_FEATURES, CLEAN_SQF, FINAL_SQF
 
-CLEAN_SQF = Path(__file__).parent.parent / "clean-data/cleaned_sqf.csv"
-FINAL_SQF = Path(__file__).parent.parent / "clean-data/final_sqf.csv"
 
 class SQFFeatureEngineer:
     def __init__(self, df):
@@ -23,21 +22,12 @@ class SQFFeatureEngineer:
             self: The instance with the new 'use_of_force' target column added.
 
         """
-        forces = [
-            "PHYSICAL_FORCE_CEW_FLAG", "PHYSICAL_FORCE_DRAW_POINT_FIREARM_FLAG",
-            "PHYSICAL_FORCE_HANDCUFF_SUSPECT_FLAG", "PHYSICAL_FORCE_OC_SPRAY_USED_FLAG",
-            "PHYSICAL_FORCE_OTHER_FLAG", "PHYSICAL_FORCE_RESTRAINT_USED_FLAG",
-            "PHYSICAL_FORCE_WEAPON_IMPACT_FLAG"
-        ]
-
-        force_use_yes = (self.df[forces] == 1)
+        force_use_yes = (self.df[FORCE_FEATURES] == 1)
         self.df["use_of_force"] = force_use_yes.any(axis=1).astype(int)
-        self.df.drop(columns=forces, inplace=True)
+        self.df.drop(columns=FORCE_FEATURES, inplace=True)
         return self
     
-        # Amanda: Shall we remove "return self" for all? Also, we can use the
-        # features_force list from before so we don't have to repeat it again here,
-        # assuming that we shift it to a separate datatypes file
+        # Amanda: Shall we remove "return self" for all? Don't think it's necessary
         # Also added the line to drop columns=forces so that our df will only have the consolidated column
     
     def encode_data(self):

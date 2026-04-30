@@ -42,8 +42,8 @@ def logreg_variations(X, y, penalty = "l2", C = 1.0, cv = 5, scoring = None):
     scores = cross_validate(logreg, X, y, cv=cv, return_train_score=True, scoring = scoring)
     return scores
 
-
-def find_best_C(X, y, C_list):
+##included "metric", so we can just put different metrics to compare
+def find_best_C(X, y, C_list, metric):
     """
     ADD DOCSTRING
     Based on accuracy (have not calculated precision or recall yet)
@@ -51,7 +51,7 @@ def find_best_C(X, y, C_list):
     mean_test_scores = {}
     
     for C in C_list:
-        scores = logreg_variations(X, y, C = C)
+        scores = logreg_variations(X, y, C = C, scoring=metric)
         mean_test_score =  np.mean(scores["test_score"])
         mean_test_scores[C] = mean_test_score
     
@@ -73,11 +73,15 @@ def get_coefficients(X, y, C):
 
 if __name__ == "__main__":
     X_train, X_test, y_train, y_test = split_dataset()
-    best_C = find_best_C(X_train, y_train, [1.0, 0.1, 0.01, 0.001, 0.0001])
-    coef_table = get_coefficients(X_train, y_train, best_C)
-    print(coef_table.sort_values(by="coef", ascending=False))
+    C_list = [1.0, 0.1, 0.01, 0.001, 0.0001]
+    metrics = ["accuracy", "precision", "recall", "f1"]
+    for metric in metrics:
+        best_C = find_best_C(X_train, y_train, C_list, metric)
+        coef_table = get_coefficients(X_train, y_train, best_C)
+        print(coef_table.sort_values(by="coef", ascending=False))
 
-    # scores = logreg_variations(X_train, y_train, best_C)
+    # scores = logreg_variations(X_train, y_train, best_C, scoring_metric)
     # mean_train_score = np.mean(scores["train_score"])
     # mean_test_score =  np.mean(scores["test_score"])
+    # print(f"Metric : {metric}")
     # print(f"Mean cross validation train score is {mean_train_score} and mean cross validation test score is {mean_test_score}")

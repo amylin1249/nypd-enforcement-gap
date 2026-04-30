@@ -20,7 +20,6 @@ class SQFDataCleaner:
             self: The instance with the raw DataFrame loaded.
         """
         self.df = pd.read_excel(self.file_path, engine="openpyxl")
-        # return self
     
     
     def select_and_clean(self):
@@ -39,21 +38,6 @@ class SQFDataCleaner:
         Returns:
             self: The instance with the cleaned and filtered DataFrame.
         """
-        # features = [
-        #     "SUSPECT_RACE_DESCRIPTION", "SUSPECT_REPORTED_AGE", "SUSPECT_SEX",
-        #     "STOP_LOCATION_PRECINCT", "STOP_WAS_INITIATED", 
-        #     "SUSPECTED_CRIME_DESCRIPTION", "FRISKED_FLAG", 
-        #     "SEARCHED_FLAG", "SUSPECT_ARRESTED_FLAG"
-        # ]
-        # self.df = self.df[features]
-        
-        # # age: fill in missing values
-        # self.df["SUSPECT_REPORTED_AGE"] = pd.to_numeric(self.df["SUSPECT_REPORTED_AGE"], errors='coerce')
-        # self.df["SUSPECT_REPORTED_AGE"] = self.df["SUSPECT_REPORTED_AGE"].fillna(self.df["SUSPECT_REPORTED_AGE"].median())
-        
-        # # drop missing values
-        # self.df = self.df.dropna()
-        # # return self
 
 
         # Amanda: Proposed edits below - I uv run python-ed using the code below (also, shift features to be global or in a separate datatypes file?)
@@ -84,8 +68,7 @@ class SQFDataCleaner:
         self.df[flag_features] = self.df[flag_features].replace("Y", 1)
         self.df[flag_features] = self.df[flag_features].replace("N", 0)
 
-        # Also, I think we can remove "return self" for all?
-
+        
 
     def save_cleaned_data(self, output_path=CLEAN_SQF):
         if not CLEAN_DATA_DIR.exists():

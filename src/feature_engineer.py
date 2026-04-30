@@ -25,11 +25,8 @@ class SQFFeatureEngineer:
         force_use_yes = (self.df[FORCE_FEATURES] == 1)
         self.df["use_of_force"] = force_use_yes.any(axis=1).astype(int)
         self.df.drop(columns=FORCE_FEATURES, inplace=True)
-        return self
-    
-        # Amanda: Shall we remove "return self" for all? Don't think it's necessary
-        # Also added the line to drop columns=forces so that our df will only have the consolidated column
-    
+        
+
     def encode_data(self):
         """
         Converts categorical features into numerical format using One-Hot Encoding 
@@ -49,15 +46,7 @@ class SQFFeatureEngineer:
             "SUSPECTED_CRIME_DESCRIPTION"
         ]
 
-        # Amanda: I changed the categorical_features to just be for those above 
-        # because the others that were originally included are already binary indicators
-        # Originally included: categorical_features = [
-        #     "SUSPECT_RACE_DESCRIPTION", "SUSPECT_SEX", "STOP_WAS_INITIATED",
-        #     "SUSPECTED_CRIME_DESCRIPTION", "FRISKED_FLAG", 
-        #     "SEARCHED_FLAG", "SUSPECT_ARRESTED_FLAG"]
-
         self.df = pd.get_dummies(self.df, columns=categorical_features, drop_first=True, dtype=float)
-        return self
     
     def save_final_data(self, output_path=FINAL_SQF):
         self.df.to_csv(output_path, index=False)

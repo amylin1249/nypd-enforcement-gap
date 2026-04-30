@@ -12,4 +12,4 @@ To analyze the performance of our model, we plan to evaluate both training and t
 1. clean_data.py: Data cleaning, including feature extraction
 2. train_model.py: Model training and tuning
 3. analyze_performance.py: Model testing and performance analysis
-Note that we have get_basic_stats.py inside src from milestone2, but it is not a part of th epipeline.
+Note that we have get_basic_stats.py inside src from milestone2, but it is not a part of the pipeline.

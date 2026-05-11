@@ -1,6 +1,5 @@
 import pandas as pd
 import numpy as np
-from pathlib import Path
 from sklearn.model_selection import train_test_split, cross_validate
 from sklearn.linear_model import LogisticRegression
 from sklearn.exceptions import UndefinedMetricWarning

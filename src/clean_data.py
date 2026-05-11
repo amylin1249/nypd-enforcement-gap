@@ -37,9 +37,6 @@ class SQFDataCleaner:
             "STOP_LOCATION_PRECINCT",
             "STOP_WAS_INITIATED",
             "SUSPECTED_CRIME_DESCRIPTION",
-            "FRISKED_FLAG",
-            "SEARCHED_FLAG",
-            "SUSPECT_ARRESTED_FLAG",
         ] + FORCE_FEATURES
 
         self.df = self.df[features].copy()
@@ -100,15 +97,6 @@ class SQFDataCleaner:
         self.df["SUSPECTED_CRIME_DESCRIPTION"] = self.df[
             "SUSPECTED_CRIME_DESCRIPTION"
         ].replace("nan", "other")
-
-        # Replace "Y" in binary feature columns with 1, and "N" with 0 for consistency
-        binary_features = ["FRISKED_FLAG", "SEARCHED_FLAG", "SUSPECT_ARRESTED_FLAG"]
-        self.df[binary_features] = self.df[binary_features].replace(
-            {"Y": 1, "N": 0, "nan": 0}
-        )
-        self.df[binary_features] = (
-            self.df[binary_features].apply(pd.to_numeric, errors="coerce").fillna(0)
-        )
 
         # Replace "Y" in physical force columns with 1, and missing values with 0
         self.df[FORCE_FEATURES] = self.df[FORCE_FEATURES].replace(

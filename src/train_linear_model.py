@@ -50,7 +50,9 @@ def find_best_C(X, y, C_list, metric):
         mean_test_score = np.mean(scores["test_score"])
         mean_test_scores[C] = mean_test_score
 
-    return max(mean_test_scores, key=mean_test_scores.get)
+    best_C = max(mean_test_scores, key=mean_test_scores.get)
+
+    return best_C, mean_test_scores[best_C]
 
 
 def get_coefficients(X, y, C):
@@ -82,8 +84,9 @@ if __name__ == "__main__":
     C_list = [1.0, 0.1, 0.01, 0.001, 0.0001]
     metrics = ["accuracy", "precision", "recall", "f1"]
     for metric in metrics:
-        best_C = find_best_C(X_train, y_train, C_list, metric)
+        best_C, score = find_best_C(X_train, y_train, C_list, metric)
         coef_table = get_coefficients(X_train, y_train, best_C)
-        print(f"Estimated coefficients (using the best C based on {metric}):")
+        print(f"Best C is based on {metric} with score {score}")
+        print(f"Estimated coefficients:")
         print(coef_table.sort_values(by="coef", ascending=False))
         print()

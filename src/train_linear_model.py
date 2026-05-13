@@ -37,7 +37,6 @@ def logreg_variations(X, y, penalty="l2", C=1.0, cv=5, scoring=None):
     return scores
 
 
-##included "metric", so we can just put different metrics to compare
 def find_best_C(X, y, C_list, metric):
     """
     Returns the best C (i.e., inverse of lambda) from the specified list of C's

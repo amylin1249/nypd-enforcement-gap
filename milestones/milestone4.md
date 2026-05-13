@@ -22,7 +22,7 @@ As for the neural network, we will select an architecture that aligns with our c
 
 
 ### What metrics will you use to analyze the performance of your model?
-
+To analyze the performance of our model, we plan to primarily focus on recall and F1 score, with accuracy as a secondary evaluation metric. Recall is especially important as we aim to minimize false negatives (i.e., cases where individuals experience physical force but are not predicted). False negatives could understate the severity of the use of force by the NYPD on certain individuals or demographic groups, potentially diluting the need for accountability and the relevance of the issue to policymakers. We will also use the F1 score to balance recall with precision to ensure that our model does not produce an excessive number of false positives while we focus on minimizing false negatives. We will also evaluate both training and test accuracy to assess overall model performance. Although our dataset is not overly imbalanced (~20% positive labels), there is still a moderate skew towards negative labels, making accuracy alone not suitable as the primary metric.
 
 ### How are you organizing the code for your project?
 Building on code organization from Milestone 3, we have organized our code into a structured pipeline with the following separate modules in src (directory containing our source files), subject to change: 

@@ -82,12 +82,14 @@ if __name__ == "__main__":
 
     C_list = [1.0, 0.1, 0.01, 0.001, 0.0001]
     metric = "recall"
-    best_C, score = find_best_C(X_train, y_train, C_list, metric)
+    best_C, train_score = find_best_C(X_train, y_train, C_list, metric)
     coef_table_train = get_coefficients(X_train, y_train, best_C)
-    print(f"Best C is based on {metric} with score {score}")
-    print("Estimated coefficients (training set):")
+    print(f"Training set: Best C selected is {best_C}, based on {metric} with score {train_score}")
+    print("Training set: Estimated coefficients")
     print(coef_table_train.sort_values(by="coef", ascending=False))
+    _, test_score = find_best_C(X_test, y_test, [best_C], metric)
+    print(f"Test set: {metric} has score {test_score}")
     coef_table_test = get_coefficients(X_test, y_test, best_C)
-    print("Estimated coefficients (test set):")
+    print("Test set: Estimated coefficients")
     print(coef_table_test.sort_values(by="coef", ascending=False))
 

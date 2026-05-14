@@ -98,7 +98,7 @@ if __name__ == "__main__":
         print(f"Mean Train {metric.upper()}: {np.mean(dt_scores['train_score']):.4f}")
         print(f"Mean Test {metric.upper()}: {np.mean(dt_scores['test_score']):.4f}")
         print(f"Best Decision Tree Depth: {best_dt_d}")
-        print(f"Decisㅑon Tree Feature Importance: {dt_importance}")
+        print(f"Decision Tree Feature Importance: {dt_importance}")
           
         #Random Forest 
         best_rf_d = find_best_rf_depth(X_train, y_train, depths, metric=metric)

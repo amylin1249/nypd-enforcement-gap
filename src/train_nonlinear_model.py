@@ -93,13 +93,19 @@ if __name__ == "__main__":
         #Decision Tree
         best_dt_d = find_best_dt_depth(X_train, y_train, depths, metric=metric)
         dt_importance = get_dt_importance(X_train, y_train, best_dt_d)
-        print(f"\n[Decision Tree - {metric.upper()}]")
+        dt_scores = dt_variations(X_train, y_train, max_depth=best_dt_d, scoring=metric)
+        print(f"\n[Decision Tree]")
+        print(f"Mean Train {metric.upper()}: {np.mean(dt_scores['train_score']):.4f}")
+        print(f"Mean Test {metric.upper()}: {np.mean(dt_scores['test_score']):.4f}")
         print(f"Best Decision Tree Depth: {best_dt_d}")
-        print(f"Decison Tree Feature Importance: {dt_importance}")
+        print(f"Decisㅑon Tree Feature Importance: {dt_importance}")
           
         #Random Forest 
         best_rf_d = find_best_rf_depth(X_train, y_train, depths, metric=metric)
         rf_importance = get_rf_importance(X_train, y_train, best_rf_d)
-        print(f"\n[Random Forest - {metric.upper()}]")
+        rf_scores = rf_variations(X_train, y_train, max_depth=best_rf_d, scoring=metric)
+        print(f"\n[Random Forest]")
         print(f"Best Random Forest Depth: {best_rf_d}")
+        print(f"Mean Train {metric.upper()}: {np.mean(rf_scores['train_score']):.4f}")
+        print(f"Mean Test {metric.upper()}: {np.mean(rf_scores['test_score']):.4f}")
         print(f"Random Forest Feature Importance: {rf_importance}")

@@ -24,7 +24,7 @@ def split_dataset():
     return train_test_split(X, y, test_size=0.2, random_state=123)
 
 
-def logreg_variations(X, y, penalty="l2", C=1.0, cv=5, scoring=None):
+def logreg_variations(X, y, penalty, C=1.0, cv=5, scoring=None):
     """
     Performs cross-validation for a logistic regression model with specified C.
     """
@@ -37,30 +37,39 @@ def logreg_variations(X, y, penalty="l2", C=1.0, cv=5, scoring=None):
     return scores
 
 
-def find_best_C(X, y, C_list, metric):
+def find_best_hyperparameters(X, y, penalty_list, C_list, metric):
     """
-    Returns the best C (i.e., inverse of lambda) from the specified list of C's
+    Returns the best penalty (l2, l1) C (i.e., inverse of lambda) from the specified list of C's
     based on the given metric (e.g., accuracy, precision, recall)
     """
-    mean_test_scores = {}
+    mean_test_scores_penalty = {}
 
-    for C in C_list:
-        scores = logreg_variations(X, y, C=C, scoring=metric)
-        mean_test_score = np.mean(scores["test_score"])
-        mean_test_scores[C] = mean_test_score
+    for penalty in penalty_list:
+        # Initialize dictionary for the given penalty to store the mean score for each C
+        mean_test_scores_C = {}
 
-    best_C = max(mean_test_scores, key=mean_test_scores.get)
+        for C in C_list:
+            scores = logreg_variations(X, y, penalty=penalty, C=C, scoring=metric)
+            mean_test_score = np.mean(scores["test_score"])
+            mean_test_scores_C[C] = mean_test_score
+        
+        # Determine the best C for the given penalty based on the highest mean score
+        best_C = max(mean_test_scores_C, key=mean_test_scores_C.get)
+        mean_test_scores_penalty[penalty] = {"best_C": best_C, "score": mean_test_scores_C[best_C]} 
 
-    return best_C, mean_test_scores[best_C]
+    # Determine the best penalty to be used based on the highest mean score among penalties
+    best_penalty = max(mean_test_scores_penalty, key=lambda k: mean_test_scores_penalty[k]["score"])
+
+    return best_penalty, mean_test_scores_penalty[best_penalty]["best_C"], mean_test_scores_penalty[best_penalty]["score"]
 
 
-def get_coefficients(X, y, C):
+def get_coefficients(X, y, penalty, C):
     """
     Determines the coefficients of the logistic regression model for the given
     samples and C value
     """
     logreg = LogisticRegression(
-        penalty="l2", C=C, solver="liblinear", class_weight="balanced"
+        penalty=penalty, C=C, solver="liblinear", class_weight="balanced"
     )
     logreg.fit(X, y)
 
@@ -80,16 +89,17 @@ if __name__ == "__main__":
 
     X_train, X_test, y_train, y_test = split_dataset()
 
-    C_list = [1.0, 0.1, 0.01, 0.001, 0.0001]
     metric = "recall"
-    best_C, train_score = find_best_C(X_train, y_train, C_list, metric)
-    coef_table_train = get_coefficients(X_train, y_train, best_C)
-    print(f"Training set: Best C selected is {best_C}, based on {metric} with score {train_score}")
+    penalty_list = ["l2", "l1"]
+    C_list = [1.0, 0.1, 0.01, 0.001, 0.0001]
+
+    # Obtain coefficients based on the selected metric and tuned hyperparameters
+    best_penalty, best_C, train_score = find_best_hyperparameters(X_train, y_train, penalty_list, C_list, metric)
+    coef_table_train = get_coefficients(X_train, y_train, best_penalty, best_C)
+    print(f"Training set: Best penalty selected is {best_penalty}, best C selected is {best_C}, based on {metric} with score {train_score}")
     print("Training set: Estimated coefficients")
     print(coef_table_train.sort_values(by="coef", ascending=False))
-    _, test_score = find_best_C(X_test, y_test, [best_C], metric)
-    print(f"Test set: {metric} has score {test_score}")
-    coef_table_test = get_coefficients(X_test, y_test, best_C)
-    print("Test set: Estimated coefficients")
-    print(coef_table_test.sort_values(by="coef", ascending=False))
+
+    ### CALCULATE RECALL ON TEST SET (PREDICTIONS)
+
 

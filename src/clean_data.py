@@ -34,10 +34,9 @@ class SQFDataCleaner:
             "SUSPECT_RACE_DESCRIPTION",
             "SUSPECT_REPORTED_AGE",
             "SUSPECT_SEX",
-            "STOP_LOCATION_PRECINCT",
             "STOP_WAS_INITIATED",
             "SUSPECTED_CRIME_DESCRIPTION",
-            "STOP_LOCATION_PATROL_BORO_NAME"
+            "STOP_LOCATION_PATROL_BORO_NAME",
         ] + FORCE_FEATURES
 
         self.df = self.df[features].copy()
@@ -45,22 +44,23 @@ class SQFDataCleaner:
         # Replace all "(null)"" values with NaN values
         self.df.replace("(null)", np.nan, inplace=True)
 
-        # Drop missing values from features: race, age, sex, location (precinct)
+        # Reported age: Convert to numeric values and filter errors
+        self.df["SUSPECT_REPORTED_AGE"] = pd.to_numeric(
+            self.df["SUSPECT_REPORTED_AGE"], errors="coerce"
+        )
+
+        # Drop missing values from features: race, age, sex, location (patrol borough)
         self.df.dropna(
             subset=[
                 "SUSPECT_RACE_DESCRIPTION",
                 "SUSPECT_REPORTED_AGE",
                 "SUSPECT_SEX",
-                "STOP_LOCATION_PRECINCT",
+                "STOP_LOCATION_PATROL_BORO_NAME",
             ],
             inplace=True,
         )
 
         # Reported age: Drop records of suspects below the age of 12 (potential record error)
-        self.df["SUSPECT_REPORTED_AGE"] = pd.to_numeric(
-            self.df["SUSPECT_REPORTED_AGE"], errors="coerce"
-        )
-        self.df = self.df[self.df["SUSPECT_REPORTED_AGE"].notna()]
         self.df["SUSPECT_REPORTED_AGE"] = self.df["SUSPECT_REPORTED_AGE"].astype(int)
         self.df = self.df[self.df["SUSPECT_REPORTED_AGE"] >= 12]
 
@@ -69,22 +69,11 @@ class SQFDataCleaner:
         age_labels = ["<18", "18–24", "25–44", "45–54", ">=55"]
 
         self.df["SUSPECT_REPORTED_AGE"] = pd.cut(
-        self.df["SUSPECT_REPORTED_AGE"], 
-        bins=age_bins, 
-        labels=age_labels, 
-        right=False)
-
-        # Clean stop location (precinct)
-        self.df["STOP_LOCATION_PRECINCT"] = pd.to_numeric(
-            self.df["STOP_LOCATION_PRECINCT"], errors="coerce"
+            self.df["SUSPECT_REPORTED_AGE"],
+            bins=age_bins,
+            labels=age_labels,
+            right=False,
         )
-        self.df = self.df[self.df["STOP_LOCATION_PRECINCT"].notna()]
-        self.df["STOP_LOCATION_PRECINCT"] = (
-            self.df["STOP_LOCATION_PRECINCT"].astype(int).astype(str)
-        )
-
-        # Clean stop location (patrol borough)
-        self.df = self.df[self.df["STOP_LOCATION_PATROL_BORO_NAME"].notna()]
 
         # Clean all string columns
         string_features = [
@@ -125,9 +114,8 @@ class SQFDataCleaner:
             "SUSPECT_SEX",
             "STOP_WAS_INITIATED",
             "SUSPECTED_CRIME_DESCRIPTION",
-            "STOP_LOCATION_PRECINCT",
             "SUSPECT_REPORTED_AGE",
-            "STOP_LOCATION_PATROL_BORO_NAME"
+            "STOP_LOCATION_PATROL_BORO_NAME",
         ]
 
         # Set white as baseline for race comparison
@@ -141,8 +129,10 @@ class SQFDataCleaner:
         )
 
         self.df = pd.get_dummies(
-            self.df, columns=categorical_features + ["SUSPECT_RACE_DESCRIPTION"], 
-            drop_first=True, dtype=float
+            self.df,
+            columns=categorical_features + ["SUSPECT_RACE_DESCRIPTION"],
+            drop_first=True,
+            dtype=float,
         )
 
         return self

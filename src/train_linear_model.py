@@ -52,15 +52,24 @@ def find_best_hyperparameters(X, y, penalty_list, C_list, metric):
             scores = logreg_variations(X, y, penalty=penalty, C=C, scoring=metric)
             mean_test_score = np.mean(scores["test_score"])
             mean_test_scores_C[C] = mean_test_score
-        
+
         # Determine the best C for the given penalty based on the highest mean score
         best_C = max(mean_test_scores_C, key=mean_test_scores_C.get)
-        mean_test_scores_penalty[penalty] = {"best_C": best_C, "score": mean_test_scores_C[best_C]} 
+        mean_test_scores_penalty[penalty] = {
+            "best_C": best_C,
+            "score": mean_test_scores_C[best_C],
+        }
 
     # Determine the best penalty to be used based on the highest mean score among penalties
-    best_penalty = max(mean_test_scores_penalty, key=lambda k: mean_test_scores_penalty[k]["score"])
+    best_penalty = max(
+        mean_test_scores_penalty, key=lambda k: mean_test_scores_penalty[k]["score"]
+    )
 
-    return best_penalty, mean_test_scores_penalty[best_penalty]["best_C"], mean_test_scores_penalty[best_penalty]["score"]
+    return (
+        best_penalty,
+        mean_test_scores_penalty[best_penalty]["best_C"],
+        mean_test_scores_penalty[best_penalty]["score"],
+    )
 
 
 def get_coefficients(X, y, penalty, C):
@@ -94,12 +103,14 @@ if __name__ == "__main__":
     C_list = [1.0, 0.1, 0.01, 0.001, 0.0001]
 
     # Obtain coefficients based on the selected metric and tuned hyperparameters
-    best_penalty, best_C, train_score = find_best_hyperparameters(X_train, y_train, penalty_list, C_list, metric)
+    best_penalty, best_C, train_score = find_best_hyperparameters(
+        X_train, y_train, penalty_list, C_list, metric
+    )
     coef_table_train = get_coefficients(X_train, y_train, best_penalty, best_C)
-    print(f"Training set: Best penalty selected is {best_penalty}, best C selected is {best_C}, based on {metric} with score {train_score}")
+    print(
+        f"Training set: Best penalty selected is {best_penalty}, best C selected is {best_C}, based on {metric} with score {train_score}"
+    )
     print("Training set: Estimated coefficients")
     print(coef_table_train.sort_values(by="coef", ascending=False))
 
     ### CALCULATE RECALL ON TEST SET (PREDICTIONS)
-
-

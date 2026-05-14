@@ -37,6 +37,7 @@ class SQFDataCleaner:
             "STOP_LOCATION_PRECINCT",
             "STOP_WAS_INITIATED",
             "SUSPECTED_CRIME_DESCRIPTION",
+            "STOP_LOCATION_PATROL_BORO_NAME"
         ] + FORCE_FEATURES
 
         self.df = self.df[features].copy()
@@ -73,7 +74,6 @@ class SQFDataCleaner:
         labels=age_labels, 
         right=False)
 
-
         # Clean stop location (precinct)
         self.df["STOP_LOCATION_PRECINCT"] = pd.to_numeric(
             self.df["STOP_LOCATION_PRECINCT"], errors="coerce"
@@ -82,6 +82,9 @@ class SQFDataCleaner:
         self.df["STOP_LOCATION_PRECINCT"] = (
             self.df["STOP_LOCATION_PRECINCT"].astype(int).astype(str)
         )
+
+        # Clean stop location (patrol borough)
+        self.df = self.df[self.df["STOP_LOCATION_PATROL_BORO_NAME"].notna()]
 
         # Clean all string columns
         string_features = [
@@ -124,6 +127,7 @@ class SQFDataCleaner:
             "SUSPECTED_CRIME_DESCRIPTION",
             "STOP_LOCATION_PRECINCT",
             "SUSPECT_REPORTED_AGE",
+            "STOP_LOCATION_PATROL_BORO_NAME"
         ]
 
         # Set white as baseline for race comparison

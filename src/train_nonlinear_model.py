@@ -35,7 +35,7 @@ def find_best_dt_depth(X, y, depth_list, metric='f1'):
 
 def get_dt_importance(X, y, best_depth):
     """
-    train decision tree and get imporatnce.
+    train decision tree and get importance.
     """
     dt = DecisionTreeClassifier(max_depth=best_depth, random_state=123)
     dt.fit(X, y)
@@ -67,7 +67,7 @@ def find_best_rf_depth(X, y, depth_list, metric='f1'):
 
 def get_rf_importance(X, y, best_depth):
     """
-    train decision tree and get imporatnce.
+    train decision tree and get importance.
     """
     rf = RandomForestClassifier(n_estimators=100, max_depth=best_depth, random_state=123)
     rf.fit(X, y)

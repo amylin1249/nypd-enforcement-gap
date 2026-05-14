@@ -63,6 +63,17 @@ class SQFDataCleaner:
         self.df["SUSPECT_REPORTED_AGE"] = self.df["SUSPECT_REPORTED_AGE"].astype(int)
         self.df = self.df[self.df["SUSPECT_REPORTED_AGE"] >= 12]
 
+        # Reported age: Aggregate data into age categories: <18, 18–24, 25–44, 45–54, >=55
+        age_bins = [0, 18, 25, 45, 55, np.inf]
+        age_labels = ["<18", "18–24", "25–44", "45–54", ">=55"]
+
+        self.df["SUSPECT_REPORTED_AGE"] = pd.cut(
+        self.df["SUSPECT_REPORTED_AGE"], 
+        bins=age_bins, 
+        labels=age_labels, 
+        right=False)
+
+
         # Clean stop location (precinct)
         self.df["STOP_LOCATION_PRECINCT"] = pd.to_numeric(
             self.df["STOP_LOCATION_PRECINCT"], errors="coerce"
@@ -112,6 +123,7 @@ class SQFDataCleaner:
             "STOP_WAS_INITIATED",
             "SUSPECTED_CRIME_DESCRIPTION",
             "STOP_LOCATION_PRECINCT",
+            "SUSPECT_REPORTED_AGE",
         ]
 
         # Set white as baseline for race comparison
@@ -128,21 +140,6 @@ class SQFDataCleaner:
             self.df, columns=categorical_features + ["SUSPECT_RACE_DESCRIPTION"], 
             drop_first=True, dtype=float
         )
-
-        return self
-
-    def normalize_continuous_feature(self):
-        """
-        Normalizes the age feature using the sklearn.preprocessing.normalize
-        method.
-
-        Returns:
-            self: The instance with the normalized age feature.
-        """
-
-        x_array = np.array(self.df["SUSPECT_REPORTED_AGE"])
-        normalized = preprocessing.normalize([x_array])
-        self.df["SUSPECT_REPORTED_AGE"] = normalized[0]
 
         return self
 
@@ -171,7 +168,6 @@ if __name__ == "__main__":
         SQFDataCleaner()
         .load_data()
         .select_and_clean()
-        .normalize_continuous_feature()
         .consolidate_use_of_force()
         .save_cleaned_data()
     )

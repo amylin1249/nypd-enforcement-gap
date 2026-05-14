@@ -81,11 +81,9 @@ if __name__ == "__main__":
     X_train, X_test, y_train, y_test = split_dataset()
 
     C_list = [1.0, 0.1, 0.01, 0.001, 0.0001]
-    metrics = ["accuracy", "precision", "recall", "f1"]
-    for metric in metrics:
-        best_C, score = find_best_C(X_train, y_train, C_list, metric)
-        coef_table = get_coefficients(X_train, y_train, best_C)
-        print(f"Best C is based on {metric} with score {score}")
-        print(f"Estimated coefficients:")
-        print(coef_table.sort_values(by="coef", ascending=False))
-        print()
+    metric = "recall"
+    best_C, score = find_best_C(X_train, y_train, C_list, metric)
+    coef_table = get_coefficients(X_train, y_train, best_C)
+    print(f"Best C is based on {metric} with score {score}")
+    print(f"Estimated coefficients:")
+    print(coef_table.sort_values(by="coef", ascending=False))

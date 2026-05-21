@@ -92,6 +92,7 @@ if __name__ == "__main__":
     pd.set_option("display.width", None)
 
     X_train, X_test, y_train, y_test = split_dataset()
+
     depths = [3, 5, 10, 20, None]
     metrics = ["recall", "f1"]
 

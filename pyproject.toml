@@ -12,4 +12,6 @@ dependencies = [
     "scikit-learn>=1.8.0",
     "torch>=2.12.0",
     "ipykernel>=7.2.0",
+    "lightning>=2.6.4",
+    "torch-lr-finder>=0.2.2",
 ]

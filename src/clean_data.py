@@ -116,24 +116,24 @@ class SQFDataCleaner:
             "SUSPECTED_CRIME_DESCRIPTION",
             "SUSPECT_REPORTED_AGE",
             "STOP_LOCATION_PATROL_BORO_NAME",
+            "SUSPECT_RACE_DESCRIPTION",
         ]
 
-        # Set white as baseline for race comparison
-        races = sorted(self.df["SUSPECT_RACE_DESCRIPTION"].unique().tolist())
-        if "white" in races:
-            races.remove("white")
-            races.insert(0, "white")
-
-        self.df["SUSPECT_RACE_DESCRIPTION"] = pd.Categorical(
-            self.df["SUSPECT_RACE_DESCRIPTION"], categories=races
-        )
-
         self.df = pd.get_dummies(
-            self.df,
-            columns=categorical_features + ["SUSPECT_RACE_DESCRIPTION"],
-            drop_first=True,
-            dtype=float,
+            self.df, columns=categorical_features, drop_first=False, dtype=float
         )
+
+        # Set baselines
+        baseline_columns = [
+            "SUSPECT_RACE_DESCRIPTION_white",
+            "SUSPECT_SEX_female",
+            "STOP_WAS_INITIATED_based on radio run",
+            "STOP_LOCATION_PATROL_BORO_NAME_PBSI",
+            "SUSPECT_REPORTED_AGE_>=55",
+            "SUSPECTED_CRIME_DESCRIPTION_criminal trespass",
+        ]
+        
+        self.df = self.df.drop(columns=baseline_columns, errors="ignore")
 
         return self
 

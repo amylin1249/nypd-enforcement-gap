@@ -17,7 +17,8 @@ class Network:
         self.sizes = sizes
         self.biases = [np.random.randn(n, 1) for n in self.sizes[1:]]
         self.weights = [
-            np.random.randn(n, m) * 0.01 for (m, n) in zip(self.sizes[:-1], self.sizes[1:])
+            np.random.randn(n, m) * 0.01
+            for (m, n) in zip(self.sizes[:-1], self.sizes[1:])
         ]
         self.acc_train_array = []
         self.acc_test_array = []
@@ -66,7 +67,7 @@ class Network:
     def SGD_train(self, train, epochs, eta, lam=0.0, verbose=True, test=None):
         """
         ADD DOCSTRING
-        """        
+        """
         n_train = len(train)
         for epoch in range(epochs):
             perm = np.random.permutation(n_train)
@@ -98,7 +99,7 @@ class Network:
 
         x = x.reshape(-1, 1)
         y = np.array([[y]])
-        
+
         a = x
         a_list = [a]
         z_list = [np.zeros(a.shape)]
@@ -125,7 +126,7 @@ class Network:
 
             prediction = int(yhat >= 0.5)
             ctr += int(prediction == y)
-    
+
         return ctr / len(test)
 
 
@@ -153,7 +154,7 @@ if __name__ == "__main__":
 
     nns = []
     hidden_layer_dimensions = [1, 2, 4, 8, 16]
-    
+
     for hidden_layer_dimension in hidden_layer_dimensions:
         print("\nHidden Layer Dimensions: ", hidden_layer_dimension)
         nn = Network([input_dimensions, hidden_layer_dimension, output_dimensions])

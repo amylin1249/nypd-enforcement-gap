@@ -1,6 +1,5 @@
 import numpy as np
 import pandas as pd
-from sklearn import preprocessing
 from datatypes import CLEAN_DATA_DIR, RAW_SQF, CLEAN_SQF, FORCE_FEATURES
 
 
@@ -73,7 +72,7 @@ class SQFDataCleaner:
             bins=age_bins,
             labels=age_labels,
             right=False,
-        )
+        ).astype(str)
 
         # Clean all string columns
         string_features = [
@@ -81,6 +80,7 @@ class SQFDataCleaner:
             "SUSPECT_SEX",
             "STOP_WAS_INITIATED",
             "SUSPECTED_CRIME_DESCRIPTION",
+            "STOP_LOCATION_PATROL_BORO_NAME",
         ]
 
         self.df[string_features] = (
@@ -123,16 +123,16 @@ class SQFDataCleaner:
             self.df, columns=categorical_features, drop_first=False, dtype=float
         )
 
-        # Set baselines
+        # Drop baseline columns
         baseline_columns = [
             "SUSPECT_RACE_DESCRIPTION_white",
             "SUSPECT_SEX_female",
             "STOP_WAS_INITIATED_based on radio run",
-            "STOP_LOCATION_PATROL_BORO_NAME_PBSI",
+            "STOP_LOCATION_PATROL_BORO_NAME_pbsi",
             "SUSPECT_REPORTED_AGE_>=55",
             "SUSPECTED_CRIME_DESCRIPTION_criminal trespass",
         ]
-        
+
         self.df = self.df.drop(columns=baseline_columns, errors="ignore")
 
         return self

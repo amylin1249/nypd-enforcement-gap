@@ -14,4 +14,5 @@ dependencies = [
     "ipykernel>=7.2.0",
     "lightning>=2.6.4",
     "torch-lr-finder>=0.2.2",
+    "seaborn>=0.13.2",
 ]

@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from datatypes import CLEAN_DATA_DIR, RAW_SQF, CLEAN_SQF, FORCE_FEATURES
+from .datatypes import CLEAN_DATA_DIR, RAW_SQF, CLEAN_SQF, FORCE_FEATURES
 
 
 class SQFDataCleaner:
@@ -155,13 +155,3 @@ class SQFDataCleaner:
         if not CLEAN_DATA_DIR.exists():
             CLEAN_DATA_DIR.mkdir()
         self.df.to_csv(output_path, index=False)
-
-
-if __name__ == "__main__":
-    (
-        SQFDataCleaner()
-        .load_data()
-        .select_and_clean()
-        .consolidate_use_of_force()
-        .save_cleaned_data()
-    )

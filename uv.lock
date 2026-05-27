@@ -1702,6 +1702,7 @@ name = "project-nypd-enforcement-gap-1"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
+    { name = "absl-py" },
     { name = "ipykernel" },
     { name = "lightning" },
     { name = "matplotlib" },
@@ -1720,6 +1721,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
+    { name = "absl-py", specifier = ">=2.4.0" },
     { name = "ipykernel", specifier = ">=7.2.0" },
     { name = "lightning", specifier = ">=2.6.4" },
     { name = "matplotlib", specifier = ">=3.10.8" },

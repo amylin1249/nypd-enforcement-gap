@@ -13,8 +13,8 @@ Given the NYPD’s massive budget, finding evidence of a disparity in treatment 
 
 
 ## Setup and Execution
-1. Clone our repository by running `git@github.com:uchicago-capp30254-spr-26/project-nypd-enforcement-gap-1.git` in your terminal.
-2. After cloning the repository, run `uv sync` in the project root directory to install the required packages and set up the virtual environment.
+1. Clone this repository by running `git clone https://github.com/amylin1249/nypd-enforcement-gap.git` in your terminal, then `cd nypd-enforcement-gap`.
+2. Run `uv sync` in the project root directory to install the required packages and set up the virtual environment.
 3. *[Optional -- these files should already be included in the repository]* To regenerate the clean data file, run `uv run python -m src` in the root directory.
 4. To load our models, please first navigate to our *src* directory by running `cd src/`. Then, run the relevant command below for each model implementation:  
     a. Linear model: `code train_linear_model.ipynb`  
@@ -29,6 +29,10 @@ https://www.nyc.gov/site/nypd/stats/reports-analysis/stopfrisk.page
 
 ### Data Source 2: NYC Mayor's Office of Criminal Justice -- NYC Youth Crime in Context: Arrest & Recidivism
 https://criminaljustice.cityofnewyork.us/reports/nyc-youth-crime-in-context-arrest-recidivism/
+
+
+## Final Report
+[Final report](milestones/final_report.ipynb) -- our full write-up of the data, models, results, and learnings.
 
 
 ## Acknowledgments

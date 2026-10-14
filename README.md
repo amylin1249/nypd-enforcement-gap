@@ -1,4 +1,4 @@
-# Project NYPD Enforcement Gap
+# NYPD Enforcement Gap
 
 ## Members
 - Haeji Ahn <ahaeji925@uchicago.edu>
@@ -10,6 +10,10 @@
 The New York Police Department (NYPD) is the largest municipal police department in the United States and is known to have a large operating budget that is greater than the combined budgets of several other agencies in New York City. Our project aims to study enforcement patterns, specifically stop, question, and frisk (SQF) actions, and identify which stops lead to physical escalation based on key features in the dataset. We aim to answer the question: To what extent do demographic characteristics (e.g, race, age, sex) predict the use of physical force during a police encounter, after controlling for situational factors (e.g., location, why the stop was initiated, the suspected crime)?
 
 Given the NYPD’s massive budget, finding evidence of a disparity in treatment would suggest that systemic bias, not underfunding, drives the escalation logic for law enforcement of different populations. Overall, the findings from our models would increase transparency on the NYPD’s use of force patterns and highlight any discrepancies in such actions across patrol boroughs to interrogate institutional accountability.
+
+
+## Final Report
+View the final report here: [NYPD Use of Force Final Report](https://drive.google.com/file/d/1thRrmlFTj4hrptw08muKC_4v_jTs68zo/view?usp=sharing)
 
 
 ## Setup and Execution
@@ -29,10 +33,6 @@ https://www.nyc.gov/site/nypd/stats/reports-analysis/stopfrisk.page
 
 ### Data Source 2: NYC Mayor's Office of Criminal Justice -- NYC Youth Crime in Context: Arrest & Recidivism
 https://criminaljustice.cityofnewyork.us/reports/nyc-youth-crime-in-context-arrest-recidivism/
-
-
-## Final Report
-[Final report](milestones/final_report.ipynb) -- our full write-up of the data, models, results, and learnings.
 
 
 ## Acknowledgments
